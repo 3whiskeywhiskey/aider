@@ -63,6 +63,7 @@ def send_with_retries(client, model_name, messages, functions, stream, log_file_
 
 
 def simple_send_with_retries(client, model_name, messages):
+    log_file_path = "chat_log.txt"  # Default log file path
     try:
         _hash, response = send_with_retries(
             client=client,
@@ -70,6 +71,7 @@ def simple_send_with_retries(client, model_name, messages):
             messages=messages,
             functions=None,
             stream=False,
+            log_file_path=log_file_path,
         )
         return response.choices[0].message.content
     except (AttributeError, openai.BadRequestError):
