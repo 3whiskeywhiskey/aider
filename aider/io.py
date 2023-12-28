@@ -104,6 +104,7 @@ class InputOutput:
         tool_error_color="red",
         encoding="utf-8",
         dry_run=False,
+        full_convo_log_file=None,
     ):
         no_color = os.environ.get("NO_COLOR")
         if no_color is not None and no_color != "":
@@ -127,6 +128,11 @@ class InputOutput:
             self.chat_history_file = Path(chat_history_file)
         else:
             self.chat_history_file = None
+
+        if full_convo_log_file is not None:
+            self.full_convo_log_file = Path(full_convo_log_file)
+        else:
+            self.full_convo_log_file = None
 
         self.encoding = encoding
         self.dry_run = dry_run
@@ -246,6 +252,11 @@ class InputOutput:
         fh = FileHistory(self.input_history_file)
         return fh.load_history_strings()
 
+    def append_full_convo_log(self, text):
+        if self.full_convo_log_file is not None:
+            with self.full_convo_log_file.open("a", encoding=self.encoding) as f:
+                f.write(text + "\n")
+
     def user_input(self, inp, log_only=True):
         if not log_only:
             style = dict(style=self.user_input_color) if self.user_input_color else dict()
@@ -262,12 +273,14 @@ class InputOutput:
         hist = f"""
 {prefix} {hist}"""
         self.append_chat_history(hist, linebreak=True)
+        self.append_full_convo_log("User: " + inp)
 
     # OUTPUT
 
     def ai_output(self, content):
         hist = "\n" + content.strip() + "\n\n"
         self.append_chat_history(hist)
+        self.append_full_convo_log("AI: " + content)
 
     def confirm_ask(self, question, default="y"):
         self.num_user_asks += 1
