@@ -54,7 +54,9 @@ def send_with_retries(client, model_name, messages, functions, stream, log_file_
     if log_file_path is not None:
         with open(os.path.expanduser(log_file_path), "a") as log_file:
             log_file.write(f"Prompt: {json.dumps(kwargs, sort_keys=True, ensure_ascii=False)}\n")
-            log_file.write(f"Response: {json.dumps(res, ensure_ascii=False)}\n\n")
+            # Convert the response to a dictionary before serializing to JSON
+            response_dict = res.to_dict() if hasattr(res, 'to_dict') else res
+            log_file.write(f"Response: {json.dumps(response_dict, sort_keys=True)}\n\n")
 
     if not stream and CACHE is not None:
         CACHE[key] = res
@@ -63,7 +65,7 @@ def send_with_retries(client, model_name, messages, functions, stream, log_file_
 
 
 def simple_send_with_retries(client, model_name, messages):
-    log_file_path = ".aider.prompt.log.md"  # Default log file path
+    log_file_path = "chat_log.txt"  # Default log file path
     try:
         _hash, response = send_with_retries(
             client=client,
