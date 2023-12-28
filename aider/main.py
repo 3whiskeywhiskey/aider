@@ -223,6 +223,9 @@ def main(argv=None, input=None, output=None, force_git_root=None):
     default_chat_history_file = (
         os.path.join(git_root, ".aider.chat.history.md") if git_root else ".aider.chat.history.md"
     )
+    default_convo_log_file = (
+        os.path.join(git_root, ".aider.chat.log.md") if git_root else ".aider.chat.log.md"
+    )
     history_group.add_argument(
         "--input-history-file",
         metavar="INPUT_HISTORY_FILE",
@@ -234,6 +237,12 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         metavar="CHAT_HISTORY_FILE",
         default=default_chat_history_file,
         help=f"Specify the chat history file (default: {default_chat_history_file})",
+    )
+    history_group.add_argument(
+        "--convo-log-file",
+        metavar="CONVO_LOG_FILE",
+        default=default_convo_log_file,
+        help=f"Specify the convo log file (default: {default_convo_log_file})",
     )
 
     ##########
@@ -354,12 +363,6 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         help="Show the version number and exit",
     )
     other_group.add_argument(
-        "--full-convo-log-file",
-        metavar="FULL_CONVO_LOG_FILE",
-        default=None,
-        help="Specify the file to log the full conversation history (optional)",
-    )
-    other_group.add_argument(
         "--apply",
         metavar="FILE",
         help="Apply the changes from the given file instead of running the chat (debug)",
@@ -441,7 +444,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         tool_error_color=args.tool_error_color,
         dry_run=args.dry_run,
         encoding=args.encoding,
-        full_convo_log_file=args.full_convo_log_file,
+        full_convo_log_file=args.convo_log_file,
     )
 
     fnames = [str(Path(fn).resolve()) for fn in args.files]
@@ -556,7 +559,6 @@ def main(argv=None, input=None, output=None, force_git_root=None):
             use_git=args.git,
             voice_language=args.voice_language,
             aider_ignore_file=args.aiderignore,
-            full_convo_log_file=args.full_convo_log_file,
         )
     except ValueError as err:
         io.tool_error(str(err))
