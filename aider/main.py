@@ -354,6 +354,12 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         help="Show the version number and exit",
     )
     other_group.add_argument(
+        "--full-convo-log-file",
+        metavar="FULL_CONVO_LOG_FILE",
+        default=None,
+        help="Specify the file to log the full conversation history (optional)",
+    )
+    other_group.add_argument(
         "--apply",
         metavar="FILE",
         help="Apply the changes from the given file instead of running the chat (debug)",
@@ -435,6 +441,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         tool_error_color=args.tool_error_color,
         dry_run=args.dry_run,
         encoding=args.encoding,
+        full_convo_log_file=args.full_convo_log_file,
     )
 
     fnames = [str(Path(fn).resolve()) for fn in args.files]
@@ -549,6 +556,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
             use_git=args.git,
             voice_language=args.voice_language,
             aider_ignore_file=args.aiderignore,
+            full_convo_log_file=args.full_convo_log_file,
         )
     except ValueError as err:
         io.tool_error(str(err))
