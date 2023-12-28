@@ -1,4 +1,4 @@
-import hashlib
+import hashlib, os
 import json
 
 import backoff
@@ -28,7 +28,7 @@ CACHE = None
         f"{details.get('exception','Exception')}\nRetry in {details['wait']:.1f} seconds."
     ),
 )
-def send_with_retries(client, model_name, messages, functions, stream):
+def send_with_retries(client, model_name, messages, functions, stream, log_file_path=None):
     if not client:
         raise ValueError("No openai client provided")
 
@@ -50,6 +50,11 @@ def send_with_retries(client, model_name, messages, functions, stream):
         return hash_object, CACHE[key]
 
     res = client.chat.completions.create(**kwargs)
+
+    if log_file_path is not None:
+        with open(os.path.expanduser(log_file_path), "a") as log_file:
+            log_file.write(f"Prompt: {json.dumps(kwargs, sort_keys=True, ensure_ascii=False)}\n")
+            log_file.write(f"Response: {json.dumps(res, ensure_ascii=False)}\n\n")
 
     if not stream and CACHE is not None:
         CACHE[key] = res
