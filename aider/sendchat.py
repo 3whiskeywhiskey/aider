@@ -1,4 +1,4 @@
-import hashlib, os
+import hashlib, os, base64
 import json
 
 import backoff
@@ -53,10 +53,12 @@ def send_with_retries(client, model_name, messages, functions, stream, log_file_
 
     if log_file_path is not None:
         with open(os.path.expanduser(log_file_path), "a") as log_file:
-            log_file.write(f"Prompt: {json.dumps(kwargs, sort_keys=True, ensure_ascii=False)}\n")
+            prompt_encoded = base64.b64encode(json.dumps(kwargs, sort_keys=True, ensure_ascii=False).encode()).decode()
+            log_file.write(f"Prompt: {prompt_encoded}\n")
             # Convert the response to a dictionary before serializing to JSON
             response_dict = res.to_dict() if hasattr(res, 'to_dict') else res
-            log_file.write(f"Response: {json.dumps(response_dict, sort_keys=True)}\n\n")
+            response_encoded = base64.b64encode(json.dumps(response_dict, sort_keys=True).encode()).decode()
+            log_file.write(f"Response: {response_encoded}\n\n")
 
     if not stream and CACHE is not None:
         CACHE[key] = res
