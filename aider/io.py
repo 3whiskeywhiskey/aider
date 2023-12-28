@@ -273,14 +273,12 @@ class InputOutput:
         hist = f"""
 {prefix} {hist}"""
         self.append_chat_history(hist, linebreak=True)
-        self.append_full_convo_log("User: " + inp)
 
     # OUTPUT
 
     def ai_output(self, content):
         hist = "\n" + content.strip() + "\n\n"
         self.append_chat_history(hist)
-        self.append_full_convo_log("AI: " + content)
 
     def confirm_ask(self, question, default="y"):
         self.num_user_asks += 1
