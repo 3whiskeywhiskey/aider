@@ -57,7 +57,8 @@ def send_with_retries(client, model_name, messages, functions, stream, log_file_
             log_file.write(f"Prompt: {prompt_encoded}\n")
             # Convert the response to a dictionary before serializing to JSON
             response_dict = res.to_dict() if hasattr(res, 'to_dict') else res
-            response_encoded = base64.b64encode(json.dumps(response_dict, sort_keys=True).encode()).decode()
+            response = res.choices[0].message.content
+            response_encoded = base64.b64encode(json.dumps(response, sort_keys=True).encode()).decode()
             log_file.write(f"Response: {response_encoded}\n\n")
 
     if not stream and CACHE is not None:
